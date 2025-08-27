@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa con Radios usando UTM</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 600px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Mapa SPT</h2>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Proj4 para convertir UTM -> Lat/Lon -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+
+  <script>
+    // Crear mapa centrado en Cartago
+    var map = L.map('map').setView([9.85, -83.91], 10); 
+
+    // Capas base
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    });
+
+    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains:['mt0','mt1','mt2','mt3']
+    });
+
+    // Activar Google Satélite por defecto
+    googleSat.addTo(map);
+
+    // Control de capas
+    L.control.layers({
+      "OpenStreetMap": osm,
+      "Google Satélite": googleSat
+    }).addTo(map);
+
+    // Definir el sistema de referencia CRTM05 (EPSG:5367 - Costa Rica)
+    proj4.defs("EPSG:5367","+proj=tmerc +lat_0=0 +lon_0=-84 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+
+    // Función para transformar UTM (CRTM05) -> Lat/Lon WGS84
+    function convertirUTM(x, y) {
+      var lonlat = proj4("EPSG:5367","EPSG:4326",[x, y]);
+      return [lonlat[1], lonlat[0]]; // Leaflet usa [lat, lon]
+    }
+
+    // 🔹 Ejemplo 1: coordenadas UTM    017-2025
+    var coords1 = convertirUTM(507908.22, 1090817.22);
+    var radio1 = L.circle(coords1, {
+      radius: 500, 
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio1.bindPopup("<b>Ocidental</b><br>Humedad(max-min): (31,5%-13,3%)</b><br>Densidad total(max-min): (1,890 Ton/m<sup>3</sup>-1,750 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(16 Ton/m<sup>2</sup>-5 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Arena limosa de baja plasticidad ");
+
+    // 🔹 Ejemplo 2: coordenadas Lat/Lon directas 010-2025
+   var coords2 = convertirUTM(512008.359, 1089213.23);
+    var radio2 = L.circle(coords2, {
+      radius: 500, 
+      color: 'purple',
+      fillColor: '#800080',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio2.bindPopup("<b>Cartago</b><br>Humedad(max-min): (85,6%-43%)</b><br>Densidad total (max-min): (1,850 Ton/m<sup>3</sup>-1,800 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-2 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Limo arenoso</b><br> Nota: Había presencia de raíces de 0,0m-0,5m");
+
+    // 🔹 Ejemplo 3: coordenadas Lat/Lon directas 020-2022
+   var coords3 = convertirUTM(513513.37, 1089149.78);
+    var radio3 = L.circle(coords3, {
+      radius: 500, 
+      color: 'yellow',
+      fillColor: '#ffff00',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio3.bindPopup("<b>Santa Lucía</b><br>Humedad(max-min): (72,7%-37,2%)</b><br>Densidad total (max-min): (1,680 Ton/m<sup>3</sup>-1,665 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-13 Ton/m<sup>2</sup>)</b><br> Profundidad: 6m </b><br> Clasificación:Limo elástico arenoso");
+
+
+
+    // 🔹 Ejemplo 4: coordenadas Lat/Lon directas 111-2023
+   var coords4 = convertirUTM(500675.56, 1095047.64);
+    var radio4 = L.circle(coords4, {
+      radius: 500, 
+      color: 'cyan',
+      fillColor: '#00ffff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio4.bindPopup("<b>Tres Ríos</b><br>Humedad(max-min): (74,9%-18,4%)</b><br>Densidad total (max-min): (1,925 Ton/m<sup>3</sup>-1,820 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(23 Ton/m<sup>2</sup>-6 Ton/m<sup>2</sup>)</b><br> Profundidad: 5m </b><br> Clasificación:Limo elástico arenoso");
+
+    // 🔹 Ejemplo 5: coordenadas Lat/Lon directas 003-2024
+   var coords5 = convertirUTM(508461.93, 1090262.7);
+    var radio5 = L.circle(coords5, {
+      radius: 500, 
+      color: 'blue',
+      fillColor: '#0000ff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio5.bindPopup("<b>Ocidental</b><br>Humedad(max-min): (36,2%-10,4%)</b><br>Densidad total (max-min): (2,316 Ton/m<sup>3</sup>-1,822 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(10 Ton/m<sup>2</sup>-5 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Arena limosa</b><br> Nota: Había presencia de material granular superficial de 0,0m-0,5m y material orgánico de 0,5m-1,0m");
+
+    // 🔹 Ejemplo 6: coordenadas Lat/Lon directas 020-2025
+   var coords6 = convertirUTM(507900.78, 1089060.27);
+    var radio6 = L.circle(coords6, {
+      radius: 500, 
+      color: 'pink',
+      fillColor: '#ffc0cb',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio6.bindPopup("<b>Cartago</b><br>Humedad(max-min): (56,9%-16,8%)</b><br>Densidad total (max-min): ( 1,975 Ton/m<sup>3</sup>-1,795 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-8 Ton/m<sup>2</sup>)</b><br> Profundidad: 5m </b><br> Clasificación:Arena limosa de baja plasticidad </b><br> Nota: Había presencia de material orgánico de 0,0m-1,0m");
+
+    // 🔹 Ejemplo 7: coordenadas UTM  021-2023
+    var coords7 = convertirUTM(512719.09, 1088935.81);
+    var radio7 = L.circle(coords7, {
+      radius: 500, 
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio7.bindPopup("<b>Paraíso</b><br>Humedad(max-min): (54,2%-19,4%)</b><br>Densidad total (max-min): (1,800 Ton/m<sup>3</sup>-1,700 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-7 Ton/m<sup>2</sup>)</b><br> Profundidad: 3,5m </b><br> Clasificación:Arena limosa ");
+
+// 🔹 Ejemplo 8: coordenadas Lat/Lon directas 022-2023
+   var coords8 = convertirUTM(492112.67, 1083028.49);
+    var radio8 = L.circle(coords8, {
+      radius: 500, 
+      color: 'purple',
+      fillColor: '#800080',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio8.bindPopup("<b>Corralillo</b><br>Humedad(max-min): (34,6%-12,2%)</b><br>Densidad total (max-min): (1,875 Ton/m<sup>3</sup>-1,650 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-17 Ton/m<sup>2</sup>)</b><br> Profundidad: 5m </b><br> Clasificación:Limo elástico arenoso");
+
+ // 🔹 Ejemplo 9: coordenadas Lat/Lon directas  024-2024
+   var coords9 = convertirUTM(521187.14, 1090353.23);
+    var radio9 = L.circle(coords9, {
+      radius: 500, 
+      color: 'yellow',
+      fillColor: '#ffff00',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio9.bindPopup("<b>Santiago</b><br>Humedad(max-min): (102,7%-38,5%)</b><br>Densidad total (max-min): (1,625 Ton/m<sup>3</sup>-1,600 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(16 Ton/m<sup>2</sup>-2 Ton/m<sup>2</sup>)</b><br> Profundidad: 3,5m </b><br> Clasificación:Arena limosa");
+
+    // 🔹 Ejemplo 10: coordenadas Lat/Lon directas 034-2023
+   var coords10 = convertirUTM(514889.05, 1093241.42);
+    var radio10= L.circle(coords10, {
+      radius: 500, 
+      color: 'cyan',
+      fillColor: '#00ffff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio10.bindPopup("<b>Paso Ancho</b><br>Humedad(max-min): (160,9%-40,7%)</b><br>Densidad total (max-min): (1,440 Ton/m<sup>3</sup>-0,960 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(12 Ton/m<sup>2</sup>-2 Ton/m<sup>2</sup>)</b><br> Profundidad: 5m </b><br> Clasificación:Arena con finos</b><br> Nota: Había presencia de material orgánico de 0,0m-0,9m ");
+
+    // 🔹 Ejemplo 11: coordenadas Lat/Lon directas 035-2024
+   var coords11 = convertirUTM(506635.69, 1090237.13);
+    var radio11 = L.circle(coords11, {
+      radius: 500, 
+      color: 'blue',
+      fillColor: '#0000ff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio11.bindPopup("<b>Guadalupe</b><br>Humedad(max-min): (79,1%-21,3%)</b><br>Densidad total (max-min): (1,850 Ton/m<sup>3</sup>-1,800 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(13 Ton/m<sup>2</sup>-2 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Arena limosa </b><br> Nota: Había presencia de material orgánico de 0,0m-0,9m");
+
+    // 🔹 Ejemplo 12: coordenadas Lat/Lon directas 047-2023
+   var coords12 = convertirUTM(511561.07, 1088857.53);
+    var radio12 = L.circle(coords12, {
+      radius: 500, 
+      color: 'pink',
+      fillColor: '#ffc0cb',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio12.bindPopup("<b>Paraíso</b><br>Humedad(max-min): (57,3%-21,3%)</b><br>Densidad total (max-min): ( 1,690 Ton/m<sup>3</sup>-1,570 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(20 Ton/m<sup>2</sup>-8 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Limo elástico arenoso </b><br> Nota: Había presencia de material orgánico de 0,0m-1,35m");
+
+    // 🔹 Ejemplo 14: coordenadas Lat/Lon directas 067-2024
+   var coords14 = convertirUTM(514698.33, 1086696.05);
+    var radio14 = L.circle(coords14, {
+      radius: 500, 
+      color: 'purple',
+      fillColor: '#800080',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio14.bindPopup("<b>Paraíso</b><br>Humedad(max-min): (65,2%-37,4%)</b><br>Densidad total (max-min): (1,635 Ton/m<sup>3</sup>-1,480 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(21 Ton/m<sup>2</sup>-13 Ton/m<sup>2</sup>)</b><br> Profundidad: 5m </b><br> Clasificación:Limo elástico arenoso</b><br> Nota: Había presencia de material orgánico de 0,0m-0,90m");
+
+ // 🔹 Ejemplo 15: coordenadas Lat/Lon directas  101-2022
+   var coords15 = convertirUTM(507646.28, 1089440.51);
+    var radio15 = L.circle(coords15, {
+      radius: 500, 
+      color: 'yellow',
+      fillColor: '#ffff00',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio15.bindPopup("<b>Cartago</b><br>Humedad(max-min): (35,2,%-25,3%)</b><br>Densidad total (max-min): (1,670 Ton/m<sup>3</sup>-1,650 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(12 Ton/m<sup>2</sup>-5 Ton/m<sup>2</sup>)</b><br> Profundidad: 3,5m </b><br> Clasificación:<Arena limosa </b><br> Nota: Había presencia de material orgánico de 0,0m-0,45m");
+
+    // 🔹 Ejemplo 16: coordenadas Lat/Lon directas 051-2022
+   var coords16 = convertirUTM(515297.55, 1085969.92);
+    var radio16= L.circle(coords16, {
+      radius: 500, 
+      color: 'cyan',
+      fillColor: '#00ffff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio16.bindPopup("<b>Paraíso</b><br>Humedad(max-min): (48,4%-36,3%)</b><br>Densidad total (max-min): (1,650 Ton/m<sup>3</sup>-1,650 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(19 Ton/m<sup>2</sup>-19 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Limo elástico arenoso</b><br> Nota: Había presencia de material orgánico de 0,0m-0,9m ");
+
+ // 🔹 Ejemplo 17: coordenadas Lat/Lon directas 102-2023
+   var coords17 = convertirUTM(521398.68, 1096056.81);
+    var radio17 = L.circle(coords17, {
+      radius: 500, 
+      color: 'blue',
+      fillColor: '#0000ff',
+      fillOpacity: 0.25
+    }).addTo(map);
+    radio17.bindPopup("<b>Payas</b><br>Humedad(max-min): (127,3%-23,4%)</b><br>Densidad total (max-min): (1,660 Ton/m<sup>3</sup>-1,520 Ton/m<sup>3</sup>)</b><br>Capacidad de soporte admisible(max-min) (FS=3):(13 Ton/m<sup>2</sup>-4 Ton/m<sup>2</sup>)</b><br> Profundidad: 4m </b><br> Clasificación:Arena limosa </b><br> Nota: Había presencia de material orgánico de 0,0m-0,9m");
+
+  </script>
+
+</body>
+</html>
+
+
